@@ -1,9 +1,8 @@
 package com.example.demo.model;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 @Entity
 public class Registration {
@@ -12,7 +11,51 @@ public class Registration {
 	private int userid;
 	private String name;
 	private String mail;
+
+
 	private String password;
+
+	@OneToMany(targetEntity = Transaction.class, mappedBy = "transactionId", fetch = FetchType.EAGER)
+	private List<Transaction> transactions;
+	private Double balance;
+
+	public Registration(int userid, String name, String mail, String password, List<Transaction> transactions, Double balance) {
+		this.userid = userid;
+		this.name = name;
+		this.mail = mail;
+		this.password = password;
+		this.transactions = new ArrayList<>();
+		this.balance = balance;
+	}
+
+	public Double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
+
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+
+	@Override
+	public String toString() {
+		return "Registration{" +
+				"userid=" + userid +
+				", name='" + name + '\'' +
+				", mail='" + mail + '\'' +
+				", password='" + password + '\'' +
+				", transactions=" + transactions +
+				", balance=" + balance +
+				'}';
+	}
+
 	public int getUserid() {
 		return userid;
 	}
@@ -49,15 +92,6 @@ public class Registration {
 		this.mail=mail;
 		this.password=password;
 	}
-	
-@Override
-
-public String toString()
-
-{
-	return "Registration[userid = " + userid + ", name=" + name + ", mail = " + mail + " password = " + password+ "]";
-	
-}
 
 }
 

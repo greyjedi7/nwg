@@ -1,8 +1,9 @@
 package com.example.demo.controller;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 
+import com.example.demo.model.Transaction;
+import com.example.demo.repository.TransactionRepository;
 import org.hibernate.internal.build.AllowSysOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +33,73 @@ public class RegistrationController {
 	@Autowired
 	private RegistrationRepository bp;
 
+	@Autowired
+	private TransactionRepository tr;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationController.class);
 	
 	@PostMapping("/register")
 	public ResponseEntity<Registration> save(@RequestBody Registration b) {
 		LOGGER.info(b.toString());
-		Registration bk = bp.save(b);
 
-		return new ResponseEntity<Registration>(bk,HttpStatus.OK);
+		Optional<Registration> detail = bp.findByUseridAndPassword(b.getUserid(),b.getPassword());
+		if(detail.isPresent()) {
+			LOGGER.info("User is present already");
+			return new ResponseEntity("User already registered",HttpStatus.OK);
+		} else {
+			LOGGER.info("User is new");
+			Registration bk = bp.save(b);
+			return new ResponseEntity<Registration>(bk, HttpStatus.OK);
+		}
 	}
-	
+
+	@PostMapping("/transaction")
+	public ResponseEntity transaction(@RequestBody Transaction transaction){
+		LOGGER.info(transaction.toString());
+
+		Registration counterparty = bp.getById(Integer.parseInt(transaction.getCounterParty()));
+		Registration party = bp.getById(Integer.parseInt(transaction.getParty()));
+
+		if(counterparty == null){
+			return new ResponseEntity("Counter Party is not found\nTransaction Failed", HttpStatus.NOT_FOUND);
+		}
+
+		if(party == null){
+			return new ResponseEntity("Party is not found\nTransaction Failed", HttpStatus.NOT_FOUND);
+		}
+
+
+
+		Double transactionAmount = transaction.getTransactionAmount();
+
+		Double partyBalance = party.getBalance();
+
+		if(partyBalance < transactionAmount){
+			return new ResponseEntity("Transaction failed because of insufficient balance", HttpStatus.CONFLICT);
+		}
+		LOGGER.info(party.toString());
+		LOGGER.info(counterparty.toString());
+		party.setBalance(party.getBalance() - transactionAmount);
+		counterparty.setBalance(counterparty.getBalance() + transactionAmount);
+
+
+		transaction.setRemainingBalance(party.getBalance());
+
+		party.getTransactions().add(transaction);
+		counterparty.getTransactions().add(transaction);
+
+		tr.save(transaction);
+
+		LOGGER.info(party.getTransactions().get(0).toString());
+		LOGGER.info(counterparty.getTransactions().get(0).toString());
+
+		bp.save(party);
+		bp.save(counterparty);
+
+
+
+		return new ResponseEntity("",HttpStatus.OK);
+	}
 
 
 @GetMapping("/getDetails/{userid}/{password}")
