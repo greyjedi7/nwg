@@ -3,12 +3,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Base64;
 
 @Entity
 public class Registration {
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int userid;
 	private String name;
 	private String mail;
@@ -32,10 +32,10 @@ public class Registration {
 		this.mail = mail;
 	}
 	public String getPassword() {
-		return password;
+		return Base64.getDecoder().decode(password).toString();
 	}
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = Base64.getEncoder().encodeToString(password.getBytes());
 	}
 	
 	public Registration()
