@@ -85,13 +85,10 @@ public class UserController {
 
 		transaction.setRemainingBalance(party.getBalance());
 
-		party.getTransactions().add(transaction);
-		counterparty.getTransactions().add(transaction);
 
 		tr.save(transaction);
 
-		LOGGER.info(party.getTransactions().get(0).toString());
-		LOGGER.info(counterparty.getTransactions().get(0).toString());
+
 
 		bp.save(party);
 		bp.save(counterparty);

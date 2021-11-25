@@ -16,16 +16,14 @@ public class User {
 
 	private String password;
 
-	@OneToMany(targetEntity = Transaction.class, mappedBy = "transactionId", fetch = FetchType.EAGER)
-	private List<Transaction> transactions;
+
 	private Double balance;
 
-	public User(int userid, String name, String mail, String password, List<Transaction> transactions, Double balance) {
+	public User(int userid, String name, String mail, String password,  Double balance) {
 		this.userid = userid;
 		this.name = name;
 		this.mail = mail;
 		this.password = password;
-		this.transactions = new ArrayList<>();
 		this.balance = balance;
 	}
 
@@ -37,13 +35,6 @@ public class User {
 		this.balance = balance;
 	}
 
-	public List<Transaction> getTransactions() {
-		return transactions;
-	}
-
-	public void setTransactions(List<Transaction> transactions) {
-		this.transactions = transactions;
-	}
 
 	@Override
 	public String toString() {
