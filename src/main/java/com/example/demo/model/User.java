@@ -43,7 +43,6 @@ public class User {
 				", name='" + name + '\'' +
 				", mail='" + mail + '\'' +
 				", password='" + password + '\'' +
-				", transactions=" + transactions +
 				", balance=" + balance +
 				'}';
 	}
