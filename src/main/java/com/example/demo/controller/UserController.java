@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.model.Registration;
-import com.example.demo.repository.RegistrationRepository;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 
 
 /**
@@ -29,27 +29,27 @@ import com.example.demo.repository.RegistrationRepository;
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/registers")
-public class RegistrationController {
+public class UserController {
 	@Autowired
-	private RegistrationRepository bp;
+	private UserRepository bp;
 
 	@Autowired
 	private TransactionRepository tr;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	
 	@PostMapping("/register")
-	public ResponseEntity<Registration> save(@RequestBody Registration b) {
+	public ResponseEntity<User> save(@RequestBody User b) {
 		LOGGER.info(b.toString());
 
-		Optional<Registration> detail = bp.findByUseridAndPassword(b.getUserid(),b.getPassword());
+		Optional<User> detail = bp.findByUseridAndPassword(b.getUserid(),b.getPassword());
 		if(detail.isPresent()) {
 			LOGGER.info("User is present already");
 			return new ResponseEntity("User already registered",HttpStatus.OK);
 		} else {
 			LOGGER.info("User is new");
-			Registration bk = bp.save(b);
-			return new ResponseEntity<Registration>(bk, HttpStatus.OK);
+			User bk = bp.save(b);
+			return new ResponseEntity<User>(bk, HttpStatus.OK);
 		}
 	}
 
@@ -57,8 +57,8 @@ public class RegistrationController {
 	public ResponseEntity transaction(@RequestBody Transaction transaction){
 		LOGGER.info(transaction.toString());
 
-		Registration counterparty = bp.getById(Integer.parseInt(transaction.getCounterParty()));
-		Registration party = bp.getById(Integer.parseInt(transaction.getParty()));
+		User counterparty = bp.getById(Integer.parseInt(transaction.getCounterParty()));
+		User party = bp.getById(Integer.parseInt(transaction.getParty()));
 
 		if(counterparty == null){
 			return new ResponseEntity("Counter Party is not found\nTransaction Failed", HttpStatus.NOT_FOUND);
@@ -103,17 +103,16 @@ public class RegistrationController {
 
 
 @GetMapping("/getDetails/{userid}/{password}")
-public ResponseEntity<Registration> getUser(@PathVariable("userid") int userid, @PathVariable("password") String password)
+public ResponseEntity<User> getUser(@PathVariable("userid") String userid, @PathVariable("password") String password)
 {
 	String encryptedPassword = Base64.getEncoder().encodeToString(password.getBytes());
-	Optional<Registration> detail = bp.findByUseridAndPassword(userid,encryptedPassword);
+	Optional<User> detail = bp.findByMailAndPassword(userid,encryptedPassword);
 	if(detail.isPresent()) {
 		LOGGER.info("Hi");
-		Registration bk=detail.get();
-		return new ResponseEntity<Registration>(bk,HttpStatus.OK);
+		User bk=detail.get();
+		return new ResponseEntity<User>(bk,HttpStatus.OK);
 	}
-	return new ResponseEntity<Registration>(HttpStatus.NOT_FOUND);
+	return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 			
 	}
 }
-

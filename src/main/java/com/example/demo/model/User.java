@@ -5,7 +5,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Entity
-public class Registration {
+public class User {
 
 	@Id
 	private int userid;
@@ -19,7 +19,7 @@ public class Registration {
 	private List<Transaction> transactions;
 	private Double balance;
 
-	public Registration(int userid, String name, String mail, String password, List<Transaction> transactions, Double balance) {
+	public User(int userid, String name, String mail, String password, List<Transaction> transactions, Double balance) {
 		this.userid = userid;
 		this.name = name;
 		this.mail = mail;
@@ -81,10 +81,10 @@ public class Registration {
 		this.password = Base64.getEncoder().encodeToString(password.getBytes());
 	}
 	
-	public Registration()
+	public User()
 	{}
 	
-	public Registration(int userid, String name, String mail, String password)
+	public User(int userid, String name, String mail, String password)
 	{
 		super();
 		this.userid=userid;
@@ -94,5 +94,3 @@ public class Registration {
 	}
 
 }
-
-
